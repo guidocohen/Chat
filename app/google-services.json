@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "43772541858",
+    "firebase_url": "https://chat-cfedc.firebaseio.com",
+    "project_id": "chat-cfedc",
+    "storage_bucket": "chat-cfedc.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:43772541858:android:cba3f5759be4244b4590fb",
+        "android_client_info": {
+          "package_name": "com.guido.chat"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "43772541858-4v6kk2621re1ae75jssh7rhjsous53gp.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCbr8dQHUzcMBL73Ezx7hpBsH-6tE8sEdQ"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "43772541858-4v6kk2621re1ae75jssh7rhjsous53gp.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
