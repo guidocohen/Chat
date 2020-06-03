@@ -1,7 +1,8 @@
-package com.guido.chat
+package com.guido.chat.activities
 
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
+import com.guido.chat.R
 
 
 class MainActivity : AppCompatActivity() {
