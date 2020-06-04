@@ -6,16 +6,22 @@ import android.text.Editable
 import android.text.TextWatcher
 import android.util.Patterns
 import android.view.LayoutInflater
+import android.view.View
 import android.view.ViewGroup
 import android.widget.EditText
 import android.widget.Toast
+import com.google.android.material.snackbar.Snackbar
 import java.util.regex.Pattern
 
 fun Activity.toast(message: CharSequence, duration: Int = Toast.LENGTH_SHORT) =
     Toast.makeText(this, message, duration).show()
 
+
 fun Activity.toast(resourceId: Int, duration: Int = Toast.LENGTH_SHORT) =
     Toast.makeText(this, resourceId, duration).show()
+
+fun Activity.snackbar(parent: View, message: CharSequence, duration: Int = Snackbar.LENGTH_SHORT) =
+    Snackbar.make(parent, message, duration).show()
 
 fun ViewGroup.inflate(layoutId: Int) = LayoutInflater.from(context).inflate(layoutId, this, false)!!
 

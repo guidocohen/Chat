@@ -2,20 +2,19 @@ package com.guido.chat.activities
 
 import android.content.Intent
 import android.os.Bundle
+import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount
 import com.google.android.gms.auth.api.signin.GoogleSignInClient
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.android.gms.common.api.ApiException
-import com.google.android.material.snackbar.Snackbar
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.GoogleAuthProvider
 import com.guido.chat.*
 import kotlinx.android.synthetic.main.activity_login.*
 
-
-class LoginActivity : AppCompatActivity() {
+class LoginActivity : AppCompatActivity(), View.OnClickListener {
 
     private val auth by lazy { FirebaseAuth.getInstance() }
     private lateinit var googleSignInClient: GoogleSignInClient
@@ -25,44 +24,62 @@ class LoginActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_login)
 
-        buttonLogIn.setOnClickListener {
-            val email = editTextEmail.text.toString()
-            val password = editTextPassword.text.toString()
-            if (isValidEmail(email) && isValidPassword(password)) logInByEmail(email, password)
-            else toast("Please make sure all the data is correct.")
-        }
+        setListeners()
 
-        textViewForgotPassword.setOnClickListener {
-            goToActivity<ForgotPasswordActivity>()
-            overridePendingTransition(android.R.anim.slide_in_left, android.R.anim.slide_out_right)
-        }
+        setValidates()
+    }
 
-        buttonCreateAccount.setOnClickListener {
-            goToActivity<SignUpActivity>()
-            overridePendingTransition(android.R.anim.slide_in_left, android.R.anim.slide_out_right)
-        }
+    private fun setListeners() {
+        textViewForgotPassword.setOnClickListener(this)
+        buttonLogIn.setOnClickListener(this)
+        buttonCreateAccount.setOnClickListener(this)
+        buttonLogInGoogle.setOnClickListener(this)
+    }
 
-        buttonLogInGoogle.setOnClickListener {
-            signIn()
-        }
-
+    private fun setValidates() {
         editTextEmail.validate {
-            editTextEmail.error = if (isValidEmail(it)) null else "Email is not valid."
+            editTextEmail.error = if (isValidEmail(it)) null else "Email is not valid"
         }
 
         editTextPassword.validate {
             editTextPassword.error = if (isValidPassword(it)) null else "The password should" +
                     " contain 1 lowercase, 1 uppercase, 1 number, 1 special character and 4 " +
-                    "characters lenght at least."
+                    "characters lenght at least"
         }
+    }
+
+    override fun onClick(v: View) {
+        when (v.id) {
+            R.id.buttonLogIn -> logIn()
+            R.id.buttonLogInGoogle -> signIn()
+            R.id.buttonCreateAccount -> createAccount()
+            R.id.textViewForgotPassword -> forgotPassword()
+        }
+    }
+
+    private fun logIn() {
+        val email = editTextEmail.text.toString()
+        val password = editTextPassword.text.toString()
+        if (isValidEmail(email) && isValidPassword(password)) logInByEmail(email, password)
+        else toast("Please make sure all the data is correct.")
+    }
+
+    private fun createAccount() {
+        goToActivity<SignUpActivity>()
+        overridePendingTransition(android.R.anim.slide_in_left, android.R.anim.slide_out_right)
+    }
+
+    private fun forgotPassword() {
+        goToActivity<ForgotPasswordActivity>()
+        overridePendingTransition(android.R.anim.slide_in_left, android.R.anim.slide_out_right)
     }
 
     private fun logInByEmail(email: String, password: String) {
         auth.signInWithEmailAndPassword(email, password).addOnCompleteListener(this) {
             if (it.isSuccessful) {
-                if (auth.currentUser!!.isEmailVerified) toast("Your user is now logged in.")
-                else toast("Must confirm email first.")
-            } else toast("Invalid email or password.")
+                if (auth.currentUser!!.isEmailVerified) toast("Your user is now logged in")
+                else toast("Must confirm email first")
+            } else toast("Invalid email or password")
         }
     }
 
@@ -75,7 +92,7 @@ class LoginActivity : AppCompatActivity() {
                 val account = task.getResult(ApiException::class.java)
                 firebaseAuthWithGoogle(account!!)
             } catch (e: ApiException) {
-                Snackbar.make(loginLayout, "Authentication Failed", Snackbar.LENGTH_SHORT).show()
+                snackbar(loginLayout, "Authentication Failed")
             }
         }
     }
@@ -93,19 +110,20 @@ class LoginActivity : AppCompatActivity() {
 
     private fun firebaseAuthWithGoogle(acct: GoogleSignInAccount) {
         val credential = GoogleAuthProvider.getCredential(acct.idToken, null)
-        auth.signInWithCredential(credential)
-            .addOnCompleteListener(this) {
-                if (it.isSuccessful) {
-                    val user = auth.currentUser
-                    Snackbar.make(loginLayout, "Authentication success.", Snackbar.LENGTH_SHORT)
-                        .show()
+        auth.signInWithCredential(credential).addOnCompleteListener(this) {
+            if (it.isSuccessful) {
+                val user = auth.currentUser
+                snackbar(loginLayout, "Authentication success")
 
-                    //updateUI(user)
-                } else {
-                    Snackbar.make(loginLayout, "Authentication Failed.", Snackbar.LENGTH_SHORT)
-                        .show()
-                    //updateUI(null)
+                auth.signOut()
+                goToActivity<MainActivity> {
+                    flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
                 }
+                //updateUI(user)
+            } else {
+                snackbar(loginLayout, "Authentication failed")
+                //updateUI(null)
             }
+        }
     }
 }
