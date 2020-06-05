@@ -12,4 +12,8 @@
     <string name="login_create_account">Crear mi cuenta</string>
     <string name="login_go_login">Volver al Login</string>
 
+    <string name="navigation_bottom_info">Info</string>
+    <string name="navigation_bottom_rates">Rates</string>
+    <string name="navigation_bottom_chat">Chat</string>
+
 </resources>
