@@ -61,10 +61,7 @@ class LoginActivity : AppCompatActivity(), View.OnClickListener {
     private fun logIn() {
         val email = editTextEmail.text.toString()
         val password = editTextPassword.text.toString()
-        if (isValidEmail(email) && isValidPassword(
-                password
-            )
-        ) logInByEmail(email, password)
+        if (isValidEmail(email) && isValidPassword(password)) logInByEmail(email, password)
         else toast("Please make sure all the data is correct.")
     }
 
@@ -81,7 +78,7 @@ class LoginActivity : AppCompatActivity(), View.OnClickListener {
     private fun logInByEmail(email: String, password: String) {
         auth.signInWithEmailAndPassword(email, password).addOnCompleteListener(this) {
             if (it.isSuccessful) {
-                if (auth.currentUser!!.isEmailVerified) toast("Your user is now logged in")
+                if (auth.currentUser!!.isEmailVerified) goToMainActivity()
                 else toast("Must confirm email first")
             } else toast("Invalid email or password")
         }
@@ -119,15 +116,19 @@ class LoginActivity : AppCompatActivity(), View.OnClickListener {
                 val user = auth.currentUser
                 snackbar(loginLayout, "Authentication success")
 
-                auth.signOut()
-                goToActivity<MainActivity> {
-                    flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
-                }
+                //auth.signOut()
+                goToMainActivity()
                 //updateUI(user)
             } else {
                 snackbar(loginLayout, "Authentication failed")
                 //updateUI(null)
             }
+        }
+    }
+
+    private fun goToMainActivity() {
+        goToActivity<MainActivity> {
+            flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
         }
     }
 }

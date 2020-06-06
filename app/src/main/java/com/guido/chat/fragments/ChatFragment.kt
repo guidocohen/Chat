@@ -9,8 +9,7 @@ import androidx.recyclerview.widget.DefaultItemAnimator
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
-import com.google.firebase.firestore.CollectionReference
-import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.*
 import com.guido.chat.R
 import com.guido.chat.adapters.ChatAdapter
 import com.guido.chat.models.Message
@@ -18,19 +17,22 @@ import com.guido.chat.utils.toast
 import kotlinx.android.synthetic.main.fragment_chat.*
 import kotlinx.android.synthetic.main.fragment_chat.view.*
 import java.util.*
+import java.util.EventListener
 import kotlin.collections.ArrayList
 
 class ChatFragment : Fragment() {
 
     private lateinit var _view: View
-    private lateinit var adapter: ChatAdapter
+    private lateinit var chatAdapter: ChatAdapter
     private val messageList = ArrayList<Message>()
 
     private val auth = FirebaseAuth.getInstance()
     private lateinit var currentUser: FirebaseUser
 
     private val store = FirebaseFirestore.getInstance()
-    private lateinit var chatDBRef: CollectionReference
+    private lateinit var chatCollectionRef: CollectionReference
+
+    private lateinit var chatSubscription: ListenerRegistration
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -42,12 +44,13 @@ class ChatFragment : Fragment() {
         setUpCurrentUser()
         setUpRecyclerView()
         setUpChatBtn()
+        suscribeToChatMesseges()
 
         return _view
     }
 
     private fun setUpChatBtn() {
-        chatDBRef = store.collection("chat")
+        chatCollectionRef = store.collection("chat")
     }
 
     private fun setUpCurrentUser() {
@@ -55,10 +58,11 @@ class ChatFragment : Fragment() {
     }
 
     private fun setUpRecyclerView() = with(_view.recyclerView) {
+        chatAdapter = ChatAdapter(messageList, currentUser.uid)
         setHasFixedSize(true)
         layoutManager = LinearLayoutManager(context)
         itemAnimator = DefaultItemAnimator()
-        adapter = ChatAdapter(messageList, currentUser.uid)
+        adapter = chatAdapter
     }
 
     private fun setUpChatDB() {
@@ -78,9 +82,9 @@ class ChatFragment : Fragment() {
         newMessage["authorId"] = message.authorId
         newMessage["message"] = message.message
         newMessage["profileImageUrl"] = message.profileImageUrl
-        newMessage["sentAt"] = message.sentAt
+        newMessage["sentAt"] = message.sentAt!!
 
-        chatDBRef.add(newMessage)
+        chatCollectionRef.add(newMessage)
             .addOnCompleteListener {
                 activity!!.toast("Message added!")
             }
@@ -89,5 +93,35 @@ class ChatFragment : Fragment() {
             }
     }
 
+    private fun suscribeToChatMesseges() {
+        chatSubscription = chatCollectionRef
+            .orderBy("sentAt", Query.Direction.DESCENDING)
+            .limit(100)
+            .addSnapshotListener(
+                object : EventListener,
+                    com.google.firebase.firestore.EventListener<QuerySnapshot> {
+                    override fun onEvent(
+                        snapshot: QuerySnapshot?,
+                        exception: FirebaseFirestoreException?
+                    ) {
+                        exception?.let {
+                            activity!!.toast("hola")
+                            return
+                        }
 
+                        snapshot?.let {
+                            messageList.clear()
+                            val messages = it.toObjects(Message::class.java)
+                            messageList.addAll(messages.asReversed())
+                            chatAdapter.notifyDataSetChanged()
+                            _view.recyclerView.smoothScrollToPosition(messageList.size)
+                        }
+                    }
+                })
+    }
+
+    override fun onDestroy() {
+        chatSubscription.remove()
+        super.onDestroy()
+    }
 }
