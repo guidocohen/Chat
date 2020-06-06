@@ -11,7 +11,8 @@ import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.android.gms.common.api.ApiException
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.GoogleAuthProvider
-import com.guido.chat.*
+import com.guido.chat.R
+import com.guido.chat.utils.*
 import kotlinx.android.synthetic.main.activity_login.*
 
 class LoginActivity : AppCompatActivity(), View.OnClickListener {
@@ -60,7 +61,10 @@ class LoginActivity : AppCompatActivity(), View.OnClickListener {
     private fun logIn() {
         val email = editTextEmail.text.toString()
         val password = editTextPassword.text.toString()
-        if (isValidEmail(email) && isValidPassword(password)) logInByEmail(email, password)
+        if (isValidEmail(email) && isValidPassword(
+                password
+            )
+        ) logInByEmail(email, password)
         else toast("Please make sure all the data is correct.")
     }
 

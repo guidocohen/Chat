@@ -4,7 +4,11 @@ import android.content.Intent
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import com.google.firebase.auth.FirebaseAuth
-import com.guido.chat.*
+import com.guido.chat.R
+import com.guido.chat.utils.goToActivity
+import com.guido.chat.utils.isValidEmail
+import com.guido.chat.utils.toast
+import com.guido.chat.utils.validate
 import kotlinx.android.synthetic.main.activity_forgot_password.*
 
 class ForgotPasswordActivity : AppCompatActivity() {

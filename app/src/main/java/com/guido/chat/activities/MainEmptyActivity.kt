@@ -1,11 +1,10 @@
-package com.guido.chat
+package com.guido.chat.activities
 
 import android.content.Intent
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import com.google.firebase.auth.FirebaseAuth
-import com.guido.chat.activities.LoginActivity
-import com.guido.chat.activities.MainActivity
+import com.guido.chat.utils.goToActivity
 
 // Login and Main Activiti Flow
 class MainEmptyActivity : AppCompatActivity() {

@@ -1,4 +1,4 @@
-package com.guido.chat
+package com.guido.chat.utils
 
 import android.app.Activity
 import android.content.Intent

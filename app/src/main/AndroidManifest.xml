@@ -11,7 +11,7 @@
         android:theme="@style/AppTheme">
         <activity
             android:theme="@android:style/Theme.NoDisplay"
-            android:name=".MainEmptyActivity">
+            android:name=".activities.MainEmptyActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
