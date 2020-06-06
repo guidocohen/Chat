@@ -28,11 +28,12 @@ class MainActivity : AppCompatActivity() {
 
     private fun getPagerAdapter(): PagerAdapter {
         val adapter = PagerAdapter(supportFragmentManager)
+
         adapter.addFragment(InfoFragment())
         adapter.addFragment(RatesFragment())
         adapter.addFragment(ChatFragment())
 
-        return PagerAdapter(supportFragmentManager)
+        return adapter
     }
 
     private fun setUpViewPager(adapter: PagerAdapter) {
