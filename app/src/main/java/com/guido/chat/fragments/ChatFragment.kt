@@ -14,13 +14,14 @@ import com.google.firebase.firestore.EventListener
 import com.guido.chat.R
 import com.guido.chat.adapters.ChatAdapter
 import com.guido.chat.models.Message
+import com.guido.chat.models.TotalMessagesEvent
+import com.guido.chat.utils.RxBus
 import com.guido.chat.utils.toast
 import kotlinx.android.synthetic.main.fragment_chat.*
 import kotlinx.android.synthetic.main.fragment_chat.view.*
 import java.util.*
 import kotlin.collections.ArrayList
 import kotlin.collections.HashMap
-import kotlin.collections.asReversed
 import kotlin.collections.set
 
 class ChatFragment : Fragment() {
@@ -119,6 +120,7 @@ class ChatFragment : Fragment() {
                             messageList.addAll(messages.asReversed())
                             chatAdapter.notifyDataSetChanged()
                             _view.recyclerView.smoothScrollToPosition(messageList.size)
+                            RxBus.publish(TotalMessagesEvent(messages.size))
                         }
                     }
                 })
