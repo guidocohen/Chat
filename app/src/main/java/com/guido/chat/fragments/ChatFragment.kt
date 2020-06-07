@@ -49,7 +49,7 @@ class ChatFragment : Fragment() {
         return _view
     }
 
-    private fun setUpChatBtn() {
+    private fun setUpChatDB() {
         chatCollectionRef = store.collection("chat")
     }
 
@@ -65,12 +65,14 @@ class ChatFragment : Fragment() {
         adapter = chatAdapter
     }
 
-    private fun setUpChatDB() {
+    private fun setUpChatBtn() {
         _view.buttonSend.setOnClickListener {
             val messageText = editTextMessage.text.toString()
             if (messageText.isNotEmpty()) {
+                val photo =
+                    currentUser.photoUrl?.let { currentUser.photoUrl.toString() } ?: run { "" }
                 val message =
-                    Message(currentUser.uid, messageText, currentUser.photoUrl.toString(), Date())
+                    Message(currentUser.uid, messageText, photo, Date())
                 saveMessage(message)
                 _view.editTextMessage.setText("")
             }
@@ -78,7 +80,7 @@ class ChatFragment : Fragment() {
     }
 
     private fun saveMessage(message: Message) {
-        val newMessage = HashMap<String, Any>()
+        val newMessage = HashMap<String, Any?>()
         newMessage["authorId"] = message.authorId
         newMessage["message"] = message.message
         newMessage["profileImageUrl"] = message.profileImageUrl

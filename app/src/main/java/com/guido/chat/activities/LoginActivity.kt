@@ -52,7 +52,7 @@ class LoginActivity : AppCompatActivity(), View.OnClickListener {
     override fun onClick(v: View) {
         when (v.id) {
             R.id.buttonLogIn -> logIn()
-            R.id.buttonLogInGoogle -> signIn()
+            R.id.buttonLogInGoogle -> signInGoogle()
             R.id.buttonCreateAccount -> createAccount()
             R.id.textViewForgotPassword -> forgotPassword()
         }
@@ -98,12 +98,13 @@ class LoginActivity : AppCompatActivity(), View.OnClickListener {
         }
     }
 
-    private fun signIn() {
+    private fun signInGoogle() {
         val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
             .requestIdToken(getString(R.string.default_web_client_id))
             .requestEmail()
             .build()
         googleSignInClient = GoogleSignIn.getClient(this, gso)
+        googleSignInClient.signOut()
 
         val signInIntent = googleSignInClient.signInIntent
         startActivityForResult(signInIntent, RC_SIGN_IN)

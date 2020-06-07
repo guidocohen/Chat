@@ -5,11 +5,6 @@
     android:layout_height="match_parent"
     tools:context=".fragments.InfoFragment">
 
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:gravity="center_vertical"
-        android:text="Hello from info" />
 
 
 </FrameLayout>

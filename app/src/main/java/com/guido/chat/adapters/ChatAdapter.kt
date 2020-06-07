@@ -44,7 +44,10 @@ class ChatAdapter(private val items: List<Message>, private val userId: String) 
         fun bind(message: Message) = with(itemView) {
             textViewMessageRight.text = message.message
             textViewTimeRight.text = SimpleDateFormat("hh:mm").format(message.sentAt)
-            Picasso.get().load(message.profileImageUrl).resize(100, 100)
+            if (message.profileImageUrl.isEmpty())
+                Picasso.get().load(R.drawable.ic_person).resize(100, 100)
+                .centerCrop().transform(CircleTransform()).into(imageViewProfileRight)
+            else Picasso.get().load(message.profileImageUrl).resize(100, 100)
                 .centerCrop().transform(CircleTransform()).into(imageViewProfileRight)
         }
     }
@@ -53,7 +56,10 @@ class ChatAdapter(private val items: List<Message>, private val userId: String) 
         fun bind(message: Message) = with(itemView) {
             textViewMessageLeft.text = message.message
             textViewTimeLeft.text = SimpleDateFormat("hh:mm").format(message.sentAt)
-            Picasso.get().load(message.profileImageUrl).resize(100, 100)
+            if (message.profileImageUrl.isEmpty())
+                Picasso.get().load(R.drawable.ic_person).resize(100, 100)
+                    .centerCrop().transform(CircleTransform()).into(imageViewProfileLeft)
+            else Picasso.get().load(message.profileImageUrl).resize(100, 100)
                 .centerCrop().transform(CircleTransform()).into(imageViewProfileLeft)
         }
     }
