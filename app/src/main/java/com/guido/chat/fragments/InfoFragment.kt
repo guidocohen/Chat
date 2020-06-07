@@ -95,7 +95,7 @@ class InfoFragment : Fragment() {
     }
 
     override fun onDestroyView() {
-        chatSubscription.remove()
+        //chatSubscription.remove()
         super.onDestroyView()
     }
 }

@@ -1,14 +1,18 @@
 package com.guido.chat.activities
 
+import android.content.Intent
 import android.os.Bundle
+import android.view.Menu
 import android.view.MenuItem
 import androidx.appcompat.app.AppCompatActivity
 import androidx.viewpager.widget.ViewPager
+import com.google.firebase.auth.FirebaseAuth
 import com.guido.chat.R
 import com.guido.chat.adapters.PagerAdapter
 import com.guido.chat.fragments.ChatFragment
 import com.guido.chat.fragments.InfoFragment
 import com.guido.chat.fragments.RatesFragment
+import com.guido.chat.utils.goToActivity
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.toolbar.*
 
@@ -78,5 +82,22 @@ class MainActivity : AppCompatActivity() {
                 else -> false
             }
         }
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+        menuInflater.inflate(R.menu.general_options_menu, menu)
+        return super.onCreateOptionsMenu(menu)
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        when (item.itemId) {
+            R.id.menu_log_out -> {
+                FirebaseAuth.getInstance().signOut()
+                goToActivity<LoginActivity> {
+                    flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+                }
+            }
+        }
+        return super.onOptionsItemSelected(item)
     }
 }

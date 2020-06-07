@@ -114,15 +114,12 @@ class LoginActivity : AppCompatActivity(), View.OnClickListener {
         val credential = GoogleAuthProvider.getCredential(acct.idToken, null)
         auth.signInWithCredential(credential).addOnCompleteListener(this) {
             if (it.isSuccessful) {
-                val user = auth.currentUser
-                snackbar(loginLayout, "Authentication success")
+                val user = auth.currentUser!!
+                snackbar(loginLayout, "${user.displayName} Authentication success")
 
-                //auth.signOut()
                 goToMainActivity()
-                //updateUI(user)
             } else {
                 snackbar(loginLayout, "Authentication failed")
-                //updateUI(null)
             }
         }
     }
