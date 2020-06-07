@@ -10,6 +10,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.firestore.*
+import com.google.firebase.firestore.EventListener
 import com.guido.chat.R
 import com.guido.chat.adapters.ChatAdapter
 import com.guido.chat.models.Message
@@ -17,8 +18,10 @@ import com.guido.chat.utils.toast
 import kotlinx.android.synthetic.main.fragment_chat.*
 import kotlinx.android.synthetic.main.fragment_chat.view.*
 import java.util.*
-import java.util.EventListener
 import kotlin.collections.ArrayList
+import kotlin.collections.HashMap
+import kotlin.collections.asReversed
+import kotlin.collections.set
 
 class ChatFragment : Fragment() {
 
@@ -69,8 +72,7 @@ class ChatFragment : Fragment() {
         _view.buttonSend.setOnClickListener {
             val messageText = editTextMessage.text.toString()
             if (messageText.isNotEmpty()) {
-                val photo =
-                    currentUser.photoUrl?.let { currentUser.photoUrl.toString() } ?: run { "" }
+                val photo = currentUser.photoUrl?.toString() ?: ""
                 val message =
                     Message(currentUser.uid, messageText, photo, Date())
                 saveMessage(message)
@@ -100,8 +102,8 @@ class ChatFragment : Fragment() {
             .orderBy("sentAt", Query.Direction.DESCENDING)
             .limit(100)
             .addSnapshotListener(
-                object : EventListener,
-                    com.google.firebase.firestore.EventListener<QuerySnapshot> {
+                object : java.util.EventListener,
+                    EventListener<QuerySnapshot> {
                     override fun onEvent(
                         snapshot: QuerySnapshot?,
                         exception: FirebaseFirestoreException?
@@ -122,8 +124,8 @@ class ChatFragment : Fragment() {
                 })
     }
 
-    override fun onDestroy() {
+    override fun onDestroyView() {
         chatSubscription.remove()
-        super.onDestroy()
+        super.onDestroyView()
     }
 }
