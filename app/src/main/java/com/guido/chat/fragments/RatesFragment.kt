@@ -7,11 +7,10 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.DefaultItemAnimator
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
-import com.google.firebase.firestore.CollectionReference
-import com.google.firebase.firestore.FirebaseFirestore
-import com.google.firebase.firestore.ListenerRegistration
+import com.google.firebase.firestore.*
 import com.guido.chat.R
 import com.guido.chat.adapters.RatesAdapter
 import com.guido.chat.dialogues.RateDialog
@@ -29,6 +28,7 @@ class RatesFragment : Fragment() {
 
     private lateinit var ratesAdapter: RatesAdapter
     private val ratesList = ArrayList<Rate>()
+    private lateinit var scrollListener: RecyclerView.OnScrollListener
 
     private val auth = FirebaseAuth.getInstance()
     private lateinit var currentUser: FirebaseUser
@@ -36,7 +36,7 @@ class RatesFragment : Fragment() {
     private val store = FirebaseFirestore.getInstance()
     private lateinit var ratesCollectionRef: CollectionReference
 
-    private lateinit var ratesSubscription: ListenerRegistration
+    private var ratesSubscription: ListenerRegistration? = null
     private lateinit var rateBusListener: Disposable
 
     override fun onCreateView(
@@ -49,7 +49,7 @@ class RatesFragment : Fragment() {
         setUpCurrentUser()
 
         setUpRecyclerView()
-        setUpFav()
+        setUpFAB()
 
         subscribeToRatings()
         subscribeToNewRatings()
@@ -73,10 +73,29 @@ class RatesFragment : Fragment() {
         layoutManager = LinearLayoutManager(context)
         itemAnimator = DefaultItemAnimator()
         adapter = ratesAdapter
+
+        setUpScrollListener()
     }
 
-    private fun setUpFav() {
-        _view.favRating.setOnClickListener { RateDialog().show(fragmentManager!!, "") }
+    private fun setUpFAB() {
+        _view.fabRating.setOnClickListener { RateDialog().show(fragmentManager!!, "") }
+    }
+
+    private fun hasUserRated(rates: ArrayList<Rate>): Boolean {
+        var result = false
+        rates.forEach {
+            if (it.userId == currentUser.uid) {
+                result = true
+            }
+        }
+        return result
+    }
+
+    private fun removeFABIfRated(rated: Boolean) {
+        if (rated) {
+            _view.fabRating.hide()
+            _view.recyclerView.removeOnScrollListener(scrollListener)
+        }
     }
 
     private fun saveRate(rate: Rate) {
@@ -97,6 +116,28 @@ class RatesFragment : Fragment() {
     }
 
     private fun subscribeToRatings() {
+        ratesSubscription = ratesCollectionRef
+            .orderBy("createdAt", Query.Direction.DESCENDING)
+            .addSnapshotListener(object : java.util.EventListener, EventListener<QuerySnapshot> {
+                override fun onEvent(
+                    snapshot: QuerySnapshot?,
+                    exception: FirebaseFirestoreException?
+                ) {
+                    exception?.let {
+                        activity!!.toast("Exception!")
+                        return
+                    }
+
+                    snapshot?.let {
+                        ratesList.clear()
+                        val rates = it.toObjects(Rate::class.java)
+                        ratesList.addAll(rates)
+                        removeFABIfRated(hasUserRated(ratesList))
+                        ratesAdapter.notifyDataSetChanged()
+                        _view.recyclerView.smoothScrollToPosition(0)
+                    }
+                }
+            })
     }
 
     private fun subscribeToNewRatings() {
@@ -105,4 +146,28 @@ class RatesFragment : Fragment() {
         }
     }
 
+    private fun setUpScrollListener() {
+        scrollListener = object : RecyclerView.OnScrollListener() {
+            override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
+                if (dy > 0 || dy < 0 && _view.fabRating.isShown) {
+                    _view.fabRating.hide()
+                }
+            }
+
+            override fun onScrollStateChanged(recyclerView: RecyclerView, newState: Int) {
+                if (newState == RecyclerView.SCROLL_STATE_IDLE) {
+                    _view.fabRating.show()
+                }
+                super.onScrollStateChanged(recyclerView, newState)
+            }
+        }
+        _view.recyclerView.addOnScrollListener(scrollListener)
+    }
+
+    override fun onDestroyView() {
+        _view.recyclerView.removeOnScrollListener(scrollListener)
+        rateBusListener.dispose()
+        ratesSubscription?.remove()
+        super.onDestroyView()
+    }
 }

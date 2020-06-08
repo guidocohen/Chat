@@ -36,7 +36,7 @@ class ChatFragment : Fragment() {
     private val store = FirebaseFirestore.getInstance()
     private lateinit var chatCollectionRef: CollectionReference
 
-    private lateinit var chatSubscription: ListenerRegistration
+    private var chatSubscription: ListenerRegistration? = null
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -127,7 +127,7 @@ class ChatFragment : Fragment() {
     }
 
     override fun onDestroyView() {
-        chatSubscription.remove()
+        chatSubscription?.remove()
         super.onDestroyView()
     }
 }

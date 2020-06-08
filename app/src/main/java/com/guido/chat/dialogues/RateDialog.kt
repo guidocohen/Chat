@@ -43,9 +43,8 @@ class RateDialog : DialogFragment() {
                         imgURL
                     )
                     RxBus.publish(NewRateEvent(rate))
-                }
-                activity!!.toast("Rate sended")
-
+                    activity!!.toast("Rate sended")
+                } else activity!!.toast("Please write your feedback")
             }
             .setNegativeButton(getString(R.string.dialog_cancel)) { _, _ ->
                 activity!!.toast("Pressed Cancel")

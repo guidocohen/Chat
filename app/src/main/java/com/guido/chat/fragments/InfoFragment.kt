@@ -14,6 +14,7 @@ import com.guido.chat.utils.CircleTransform
 import com.guido.chat.utils.RxBus
 import com.guido.chat.utils.toast
 import com.squareup.picasso.Picasso
+import io.reactivex.rxjava3.disposables.Disposable
 import kotlinx.android.synthetic.main.fragment_info.view.*
 
 class InfoFragment : Fragment() {
@@ -26,7 +27,8 @@ class InfoFragment : Fragment() {
     private val store = FirebaseFirestore.getInstance()
     private lateinit var chatCollectionRef: CollectionReference
 
-    private lateinit var chatSubscription: ListenerRegistration
+    private var chatSubscription: ListenerRegistration? = null
+    private lateinit var infoBusListener: Disposable
 
 
     override fun onCreateView(
@@ -89,13 +91,14 @@ class InfoFragment : Fragment() {
     }
 
     private fun subscribeToTotalMessagesEventBusReactiveStyle() {
-        RxBus.listen(TotalMessagesEvent::class.java).subscribe {
+        infoBusListener = RxBus.listen(TotalMessagesEvent::class.java).subscribe {
             _view.textViewInfoTotalMessages.text = "${it.total}"
         }
     }
 
     override fun onDestroyView() {
-        //chatSubscription.remove()
+        infoBusListener.dispose()
+        chatSubscription?.remove()
         super.onDestroyView()
     }
 }
