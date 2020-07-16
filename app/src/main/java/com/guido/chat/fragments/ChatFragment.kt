@@ -91,10 +91,10 @@ class ChatFragment : Fragment() {
 
         chatCollectionRef.add(newMessage)
             .addOnCompleteListener {
-                activity!!.toast("Message added!")
+                //activity!!.toast("Message added!")
             }
             .addOnFailureListener {
-                activity!!.toast("Message error, try again!")
+                activity!!.toast("No enviado")
             }
     }
 
@@ -110,7 +110,6 @@ class ChatFragment : Fragment() {
                         exception: FirebaseFirestoreException?
                     ) {
                         exception?.let {
-                            activity!!.toast("hola")
                             return
                         }
 

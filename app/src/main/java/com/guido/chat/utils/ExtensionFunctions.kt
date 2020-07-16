@@ -20,7 +20,7 @@ fun Activity.toast(message: CharSequence, duration: Int = Toast.LENGTH_SHORT) =
 fun Activity.toast(resourceId: Int, duration: Int = Toast.LENGTH_SHORT) =
     Toast.makeText(this, resourceId, duration).show()
 
-fun Activity.snackbar(parent: View, message: CharSequence, duration: Int = Snackbar.LENGTH_SHORT) =
+fun snackbar(parent: View, message: CharSequence, duration: Int = Snackbar.LENGTH_SHORT) =
     Snackbar.make(parent, message, duration).show()
 
 fun ViewGroup.inflate(layoutId: Int) = LayoutInflater.from(context).inflate(layoutId, this, false)!!

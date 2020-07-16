@@ -19,8 +19,6 @@ class ForgotPasswordActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_forgot_password)
 
-        mAuth.currentUser
-
         editTextEmail.validate {
             editTextEmail.error = if (isValidEmail(it)) null else "Email is not valid."
         }
@@ -35,8 +33,8 @@ class ForgotPasswordActivity : AppCompatActivity() {
                 .addOnCompleteListener(this) {
                     toast("Email has been sent to reset your password.")
                     goToLogin()
-                } else toast("Please make sure the email address is correct.")
-
+                }
+            else toast("Please make sure the email address is correct.")
         }
     }
 
